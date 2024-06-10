@@ -3,17 +3,23 @@ name = "imap-codec"
 description = "Rock-solid and complete codec for IMAP"
 keywords = ["email", "imap", "codec", "parser"]
 categories = ["email", "parser-implementations", "encoding", "network-programming"]
-version = "2.0.0"
+version = "2.0.0-alpha.1"
 authors = ["Damian Poddebniak <poddebniak@mailbox.org>"]
 repository = "https://github.com/duesee/imap-codec"
 license = "MIT OR Apache-2.0"
 edition = "2021"
+exclude = [
+    ".github",
+]
 
 [features]
 default = ["quirk_rectify_numbers", "quirk_missing_text", "quirk_trailing_space"]
 
 # <Forward to imap-types>
 bounded-static = ["dep:bounded-static", "imap-types/bounded-static"]
+
+# Expose internal parsers for fuzzing
+fuzz = []
 
 # IMAP
 starttls = ["imap-types/starttls"]
@@ -59,31 +65,12 @@ abnf-core = "0.6.0"
 base64 = "0.21"
 bounded-static = { version = "0.5.0", optional = true }
 chrono = { version = "0.4", default-features = false, features = ["alloc"] }
-# TODO: This should be `version = 2.0.0` but I can't make it work with `cargo-semver-checks`
-imap-types = { path = "../imap-types", default-features = false, features = ["unvalidated"] }
+imap-types = { version = "2.0.0-alpha.1", default-features = false, features = ["unvalidated"] }
 nom = "7"
 serde = { version = "1", features = ["derive"], optional = true }
-thiserror = "1.0.29"
-log = "0.4.19"
-
-[dev-dependencies]
-criterion = "0.5.1"
-# Make `cargo +nightly -Z minimal-versions update` work.
-regex = "1.5.3"
-
-[[bench]]
-name = "greeting"
-harness = false
-
-[[bench]]
-name = "command"
-harness = false
-
-[[bench]]
-name = "response"
-harness = false
+thiserror = "1.0.61"
+log = "0.4.21"
 
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
-

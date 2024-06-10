@@ -1,10 +1,27 @@
 # imap-types
 
+```mermaid
+%%{init: {'theme': 'neutral' } }%%
+flowchart LR
+    imap-types -.-> imap-codec
+    imap-codec -.-> imap-next
+    imap-next -.-> proxy
+    imap-next -.-> imap-client
+    
+    style imap-types stroke-width:4px
+    
+    click imap-types href "https://github.com/duesee/imap-codec/tree/main/imap-types"
+    click imap-codec href "https://github.com/duesee/imap-codec"
+    click imap-next href "https://github.com/duesee/imap-next"
+    click proxy href "https://github.com/duesee/imap-next/tree/main/proxy"
+    click imap-client href "https://github.com/soywod/imap-client"
+```
+
 This crate provides a complete set of well-designed, misuse-resistant types for the [IMAP4rev1] protocol and various [extensions].
 Notably, it does *not* provide parsers, nor serializers, but tries to become the "standard library" for IMAP in Rust that is
 useful for a broad range of crates.
 
-If you are looking for a complete codec implementation, i.e., parsers, serializers, and network support, head over to [imap-codec].
+If you are looking for parsers, and serializers, head over to [`imap-codec`].
 
 ## Features
 
@@ -148,7 +165,7 @@ This crate is dual-licensed under Apache 2.0 and MIT terms.
 
 [IMAP4rev1]: https://datatracker.ietf.org/doc/html/rfc3501
 [extensions]: https://docs.rs/imap-codec/latest/imap_codec/#features
-[imap-codec]: https://docs.rs/imap-types/latest/imap_codec/
+[`imap-codec`]: https://docs.rs/imap-types/latest/imap_codec/
 [cargo fuzz]: https://github.com/rust-fuzz/cargo-fuzz
 [core]: https://docs.rs/imap-types/latest/imap_types/core/index.html
 

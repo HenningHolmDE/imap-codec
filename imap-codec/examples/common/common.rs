@@ -24,7 +24,8 @@ pub fn read_more(buffer: &mut Vec<u8>, role: Role) {
 
     let line = read_line(prompt, role);
 
-    if line.trim() == "exit" {
+    // If `read_line` produces an empty string, standard input has been closed.
+    if line.is_empty() || line.trim() == "exit" {
         println!("Exiting.");
         std::process::exit(0);
     }
@@ -45,5 +46,21 @@ fn read_line(prompt: &str, role: Role) -> String {
 
     print!("{RESET}");
 
-    line.replace('\n', "\r\n")
+    // If `Stdin::read_line` produces an empty string, standard input has been closed.
+    if line.is_empty() {
+        return line;
+    }
+
+    // Ensure `CRLF` line ending of resulting string.
+    // Line ending of `line` can be one of:
+    // - `CRLF` on Windows
+    // - `LF` on Unix-like
+    // - none when EOF of standard input is reached
+    if line.ends_with("\r\n") {
+        return line;
+    }
+    if line.ends_with('\n') {
+        line.pop();
+    }
+    line + "\r\n"
 }

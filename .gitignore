@@ -1,6 +1,6 @@
-Cargo.lock
 target
 .idea
 
 # direnv (https://direnv.net/)
 .envrc
+.direnv

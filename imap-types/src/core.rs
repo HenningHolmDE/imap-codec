@@ -45,9 +45,8 @@ use std::{
 use arbitrary::Arbitrary;
 #[cfg(feature = "bounded-static")]
 use bounded_static::ToStatic;
-use serde::Deserializer;
 #[cfg(feature = "serde")]
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 
 use crate::utils::indicators::{
     is_any_text_char_except_quoted_specials, is_astring_char, is_atom_char, is_char8, is_text_char,
@@ -1145,7 +1144,8 @@ impl<'a> AsRef<str> for Tag<'a> {
 #[derive(PartialEq, Eq, Hash, Clone)]
 pub struct Text<'a>(pub(crate) Cow<'a, str>);
 
-impl<'de, 'a> serde::Deserialize<'de> for Text<'a> {
+#[cfg(feature = "serde")]
+impl<'de, 'a> Deserialize<'de> for Text<'a> {
     fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
         let s = String::deserialize(d)?;
 
@@ -1342,7 +1342,7 @@ impl TryFrom<char> for QuotedChar {
 /// ;                                           `Charset`
 //                     ; CHARSET argument to MUST be registered with IANA
 /// ```
-/// 
+///
 /// So, it seems that it should be an `AString`. However the IMAP standard also points to ...
 /// ```abnf
 /// mime-charset       = 1*mime-charset-chars

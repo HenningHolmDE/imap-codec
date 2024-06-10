@@ -81,6 +81,7 @@ dependencies = [
  "imap-codec",
  "imap-types",
  "pyo3",
+ "serde",
  "serde-pyobject",
 ]
 

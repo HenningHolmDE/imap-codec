@@ -1,6 +1,10 @@
 use imap_codec::{encode::Encoder, GreetingCodec};
-use imap_types::response::Greeting;
+use imap_types::{
+    core::Text,
+    response::{Code, Greeting, GreetingKind},
+};
 use pyo3::prelude::*;
+use serde::{de::value::StrDeserializer, Deserialize};
 
 #[pyclass(name = "Greeting")]
 struct PyGreeting(Greeting<'static>);
@@ -8,9 +12,14 @@ struct PyGreeting(Greeting<'static>);
 #[pymethods]
 impl PyGreeting {
     #[new]
-    pub fn new(py: Python, object: PyObject) -> PyResult<Self> {
-        let x = serde_pyobject::from_pyobject(object.into_bound(py))?;
-        Ok(Self(x))
+    pub fn new(kind: &str, text: &str, code: Option<&str>) -> PyResult<Self> {
+        Ok(Self(Greeting {
+            kind: GreetingKind::deserialize(StrDeserializer::<serde_pyobject::Error>::new(kind))?,
+            code: code
+                .map(|c| Code::deserialize(StrDeserializer::<serde_pyobject::Error>::new(c)))
+                .transpose()?,
+            text: Text::deserialize(StrDeserializer::<serde_pyobject::Error>::new(text))?,
+        }))
     }
 
     fn __repr__(&self, py: Python) -> String {

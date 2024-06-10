@@ -11,6 +11,7 @@ crate-type = ["cdylib"]
 imap-codec = { path = "../../imap-codec" }
 imap-types = { path = "../../imap-types", features = ["serde"] }
 pyo3 = { version = "0.21.2", features = ["serde"] }
+serde = { version = "1.0.203" }
 serde-pyobject = "0.3.0"
 
 # This is to keep this crate out of the imap-codec workspace.

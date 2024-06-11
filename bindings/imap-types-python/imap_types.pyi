@@ -1,4 +1,4 @@
-from typing import Final, Optional
+from typing import Final, Optional, Tuple
 
 class Code:
     """
@@ -52,3 +52,16 @@ class GreetingKind:
 
     (Advice: The server closes the connection immediately.)
     """
+
+class GreetingCodec:
+    """
+    Codec for greetings.
+    """
+
+    def decode(self, bytes: bytes) -> Tuple[bytes, Greeting]:
+        """
+        Decode Greeting from given bytes.
+
+        :param bytes: Given bytes
+        :return: Tuple of remaining bytes and decoded greeting
+        """

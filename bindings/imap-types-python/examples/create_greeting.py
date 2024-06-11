@@ -1,4 +1,4 @@
-import imap_types
+from imap_types import Greeting, GreetingKind
 
 
 def print_details(greeting):
@@ -9,22 +9,22 @@ def print_details(greeting):
 
 def main():
     # Greeting without code
-    greeting = imap_types.Greeting("Ok", "Hello, world!")
+    greeting = Greeting(GreetingKind.Ok, "Hello, world!")
     print_details(greeting)
-    greeting = imap_types.Greeting(kind="Ok", text="Hello, world!")
+    greeting = Greeting(GreetingKind.Ok, text="Hello, world!")
     print_details(greeting)
-    greeting = imap_types.Greeting(kind="Ok", text="Hello, world!", code=None)
+    greeting = Greeting(GreetingKind.Ok, text="Hello, world!", code=None)
     print_details(greeting)
 
     # Greeting with code
-    greeting = imap_types.Greeting(
-        "Ok",
+    greeting = Greeting(
+        GreetingKind.Ok,
         "Hello, world!",
         "Alert",
     )
     print_details(greeting)
-    greeting = imap_types.Greeting(
-        kind="Ok",
+    greeting = Greeting(
+        kind=GreetingKind.Ok,
         text="Hello, world!",
         code="Alert",
     )

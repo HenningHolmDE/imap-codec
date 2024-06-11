@@ -11,6 +11,8 @@ use arbitrary::Arbitrary;
 use base64::{engine::general_purpose::STANDARD as _base64, Engine};
 #[cfg(feature = "bounded-static")]
 use bounded_static::ToStatic;
+#[cfg(feature = "pyo3")]
+use pyo3::pyclass;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -93,6 +95,7 @@ impl<'a> Greeting<'a> {
 
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
 #[cfg_attr(feature = "bounded-static", derive(ToStatic))]
+#[cfg_attr(feature = "pyo3", pyclass)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 /// IMAP4rev1 defines three possible greetings at connection startup.

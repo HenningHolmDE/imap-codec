@@ -9,7 +9,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 imap-codec = { path = "../../imap-codec" }
-imap-types = { path = "../../imap-types", features = ["serde"] }
+imap-types = { path = "../../imap-types", features = ["pyo3", "serde"] }
 pyo3 = { version = "0.21.2", features = ["serde"] }
 serde = { version = "1.0.203" }
 serde-pyobject = "0.3.0"

@@ -1,13 +1,16 @@
 from imap_types import Greeting, GreetingKind
 
 
-def print_details(greeting):
-    print(type(greeting))
-    print(repr(greeting))
-    print(str(greeting))
+def print_details(obj):
+    print("Type:", type(obj))
+    print("Repr:", repr(obj))
+    print("Str:", str(obj))
 
 
 def main():
+    # GreetingKind
+    print_details(GreetingKind.Ok)
+
     # Greeting without code
     greeting = Greeting(GreetingKind.Ok, "Hello, world!")
     print_details(greeting)

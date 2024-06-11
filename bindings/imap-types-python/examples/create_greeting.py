@@ -1,13 +1,19 @@
-from imap_types import Greeting, GreetingKind
+from imap_types import Code, Greeting, GreetingKind
 
 
 def print_details(obj):
     print("Type:", type(obj))
     print("Repr:", repr(obj))
     print("Str:", str(obj))
+    print("-" * 100)
 
 
 def main():
+    # Code
+    # TODO: There has to be a more Pythonic way!
+    print_details(Code("Alert"))
+    print_details(Code({"BadCharset": {"allowed": []}}))
+
     # GreetingKind
     print_details(GreetingKind.Ok)
 
@@ -23,13 +29,13 @@ def main():
     greeting = Greeting(
         GreetingKind.Ok,
         "Hello, world!",
-        "Alert",
+        Code("Alert"),
     )
     print_details(greeting)
     greeting = Greeting(
         kind=GreetingKind.Ok,
         text="Hello, world!",
-        code="Alert",
+        code=Code("Alert"),
     )
     print_details(greeting)
 

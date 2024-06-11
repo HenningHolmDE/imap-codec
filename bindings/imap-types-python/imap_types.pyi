@@ -1,5 +1,19 @@
 from typing import Final, Optional
 
+class Code:
+    """
+    A response code consists of data inside square brackets in the form of an atom,
+    possibly followed by a space and arguments.  The response code
+    contains additional information or status codes for client software
+    beyond the OK/NO/BAD condition, and are defined when there is a
+    specific action that a client can take based upon the additional
+    information.
+
+    :param code: Object to be deserialized into Code variant.
+    """
+
+    def __init__(self, code: object) -> None: ...
+
 class Greeting:
     """
     Greeting.

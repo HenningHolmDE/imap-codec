@@ -1210,8 +1210,6 @@ dependencies = [
  "imap-types",
  "log",
  "nom",
- "serde",
- "thiserror",
 ]
 
 [[package]]

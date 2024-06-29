@@ -1,8 +1,9 @@
 use imap_codec::{
     decode::{self, Decoder},
+    encode::Encoder,
     CommandCodec, GreetingCodec, ResponseCodec,
 };
-use pyo3::{create_exception, exceptions::PyException, prelude::*};
+use pyo3::{create_exception, exceptions::PyException, prelude::*, types::PyBytes};
 
 #[derive(Debug, Clone, PartialEq)]
 #[pyclass(name = "CommandCodec")]
@@ -33,6 +34,14 @@ create_exception!(imap_codec, ResponseDecodeLiteralFound, ResponseDecodeError);
 
 #[pymethods]
 impl PyCommandCodec {
+    #[staticmethod]
+    fn encode<'a>(py: Python, message: PyObject) -> PyResult<Bound<PyBytes>> {
+        let message = serde_pyobject::from_pyobject(message.into_bound(py))?;
+        let encoded = CommandCodec::default().encode(&message);
+        let dump = encoded.dump();
+        Ok(PyBytes::new_bound(py, &dump))
+    }
+
     #[staticmethod]
     fn decode<'a>(py: Python, bytes: &'a [u8]) -> PyResult<(&'a [u8], PyObject)> {
         match CommandCodec::default().decode(bytes) {

@@ -6,6 +6,15 @@ class CommandCodec:
     """
 
     @staticmethod
+    def encode(command: dict) -> bytes:
+        """
+        Encode command into bytes.
+
+        :param bytes: Given command
+        :return: Bytes of encoded command
+        """
+
+    @staticmethod
     def decode(bytes: bytes) -> Tuple[bytes, dict]:
         """
         Decode command from given bytes.

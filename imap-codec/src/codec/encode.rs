@@ -79,6 +79,8 @@ use imap_types::{
     status::{StatusDataItem, StatusDataItemName},
     utils::escape_quoted,
 };
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 use utils::{join_serializable, List1AttributeValueOrNil, List1OrNil};
 
 use crate::{AuthenticateDataCodec, CommandCodec, GreetingCodec, IdleDoneCodec, ResponseCodec};
@@ -154,6 +156,7 @@ impl Iterator for Encoded {
 }
 
 /// The intended action of a client or server.
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Fragment {
     /// A line that is ready to be send.

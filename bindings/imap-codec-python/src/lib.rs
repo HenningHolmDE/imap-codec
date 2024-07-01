@@ -1,9 +1,9 @@
 use imap_codec::{
     decode::{self, Decoder},
-    encode::Encoder,
+    encode::{Encoded, Encoder},
     CommandCodec, GreetingCodec, ResponseCodec,
 };
-use pyo3::{create_exception, exceptions::PyException, prelude::*, types::PyBytes};
+use pyo3::{create_exception, exceptions::PyException, prelude::*};
 
 #[derive(Debug, Clone, PartialEq)]
 #[pyclass(name = "CommandCodec")]
@@ -32,14 +32,33 @@ create_exception!(imap_codec, ResponseDecodeFailed, ResponseDecodeError);
 create_exception!(imap_codec, ResponseDecodeIncomplete, ResponseDecodeError);
 create_exception!(imap_codec, ResponseDecodeLiteralFound, ResponseDecodeError);
 
+#[derive(Debug, Clone)]
+#[pyclass(name = "Encoded")]
+struct PyEncoded(Encoded);
+
+#[pymethods]
+impl PyEncoded {
+    fn __iter__(slf: PyRef<'_, Self>) -> PyRef<'_, Self> {
+        slf
+    }
+
+    fn __next__(&mut self, py: Python) -> PyResult<Option<PyObject>> {
+        Ok(self
+            .0
+            .next()
+            .map(|value| serde_pyobject::to_pyobject(py, &value))
+            .transpose()?
+            .map(Bound::unbind))
+    }
+}
+
 #[pymethods]
 impl PyCommandCodec {
     #[staticmethod]
-    fn encode<'a>(py: Python, message: PyObject) -> PyResult<Bound<PyBytes>> {
+    fn encode<'a>(py: Python, message: PyObject) -> PyResult<PyEncoded> {
         let message = serde_pyobject::from_pyobject(message.into_bound(py))?;
         let encoded = CommandCodec::default().encode(&message);
-        let dump = encoded.dump();
-        Ok(PyBytes::new_bound(py, &dump))
+        Ok(PyEncoded(encoded))
     }
 
     #[staticmethod]
@@ -156,5 +175,6 @@ fn imap_codec_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
         m.py().get_type_bound::<ResponseDecodeLiteralFound>(),
     )?;
 
+    m.add_class::<PyEncoded>()?;
     Ok(())
 }

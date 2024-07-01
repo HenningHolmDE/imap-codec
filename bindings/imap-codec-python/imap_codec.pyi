@@ -6,12 +6,12 @@ class CommandCodec:
     """
 
     @staticmethod
-    def encode(command: dict) -> bytes:
+    def encode(command: dict) -> Encoded:
         """
-        Encode command into bytes.
+        Encode command into fragments.
 
         :param bytes: Given command
-        :return: Bytes of encoded command
+        :return: `Encoded` type holding fragments of encoded command
         """
 
     @staticmethod
@@ -113,3 +113,16 @@ class ResponseDecodeLiteralFound(ResponseDecodeError):
     "LiteralFound" error during response decoding:
     The decoder stopped at the beginning of literal data.
     """
+
+class Encoded:
+    """
+    An encoded message.
+
+    This struct facilitates the implementation of IMAP client- and server implementations by
+    yielding the encoding of a message through [`Fragment`]s. This is required, because the usage of
+    literals (and some other types) may change the IMAP message flow. Thus, in many cases, it is an
+    error to just "dump" a message and send it over the network.
+    """
+
+    def __iter__(self) -> "Encoded": ...
+    def __next__(self) -> dict: ...

@@ -42,42 +42,44 @@ impl PyEncoded {
         slf
     }
 
-    fn __next__<'py>(&mut self, py: Python<'py>) -> PyResult<Option<Bound<'py, PyAny>>> {
-        let Some(encoded) = &mut self.0 else {
+    fn __next__(mut slf: PyRefMut<'_, Self>) -> PyResult<Option<Bound<PyAny>>> {
+        let Some(encoded) = &mut slf.0 else {
             return Ok(None);
         };
         Ok(encoded
             .next()
-            .map(|value| serde_pyobject::to_pyobject(py, &value))
+            .map(|value| serde_pyobject::to_pyobject(slf.py(), &value))
             .transpose()?)
     }
 
-    fn dump<'py>(&mut self, py: Python<'py>) -> PyResult<Bound<'py, PyBytes>> {
+    fn dump(mut slf: PyRefMut<'_, Self>) -> PyResult<Bound<PyBytes>> {
         // TODO: Could we change `Encoded::dump(self)` to `Encoded::dump(&mut self)`?
-        let encoded = std::mem::take(&mut self.0);
+        let encoded = std::mem::take(&mut slf.0);
         let dump = match encoded {
             Some(encoded) => encoded.dump(),
             None => Vec::new(),
         };
-        Ok(PyBytes::new_bound(py, &dump))
+        Ok(PyBytes::new_bound(slf.py(), &dump))
     }
 }
 
 #[pymethods]
 impl PyCommandCodec {
     #[staticmethod]
-    fn encode<'a>(py: Python, message: PyObject) -> PyResult<PyEncoded> {
-        let message = serde_pyobject::from_pyobject(message.into_bound(py))?;
+    fn encode(message: Bound<PyAny>) -> PyResult<PyEncoded> {
+        let message = serde_pyobject::from_pyobject(message)?;
         let encoded = CommandCodec::default().encode(&message);
         Ok(PyEncoded(Some(encoded)))
     }
 
     #[staticmethod]
-    fn decode<'a>(py: Python, bytes: &'a [u8]) -> PyResult<(&'a [u8], PyObject)> {
-        match CommandCodec::default().decode(bytes) {
-            Ok((remaining, command)) => {
-                Ok((remaining, serde_pyobject::to_pyobject(py, &command)?.into()))
-            }
+    fn decode(bytes: Bound<PyBytes>) -> PyResult<(Bound<PyBytes>, Bound<PyAny>)> {
+        let py = bytes.py();
+        match CommandCodec::default().decode(bytes.as_bytes()) {
+            Ok((remaining, command)) => Ok((
+                PyBytes::new_bound(py, remaining),
+                serde_pyobject::to_pyobject(py, &command)?,
+            )),
             Err(err) => Err(match err {
                 decode::CommandDecodeError::Incomplete => CommandDecodeIncomplete::new_err(()),
                 decode::CommandDecodeError::LiteralFound { tag, length, mode } => {
@@ -96,10 +98,11 @@ impl PyCommandCodec {
 #[pymethods]
 impl PyGreetingCodec {
     #[staticmethod]
-    fn decode<'a>(py: Python, bytes: &'a [u8]) -> PyResult<(&'a [u8], PyObject)> {
+    fn decode(bytes: Bound<PyBytes>) -> PyResult<(Bound<PyBytes>, Bound<PyAny>)> {
+        let py = bytes.py();
         let (remaining, greeting) =
             GreetingCodec::default()
-                .decode(bytes)
+                .decode(bytes.as_bytes())
                 .map_err(|e| match e {
                     decode::GreetingDecodeError::Incomplete => {
                         GreetingDecodeIncomplete::new_err(())
@@ -107,8 +110,8 @@ impl PyGreetingCodec {
                     decode::GreetingDecodeError::Failed => GreetingDecodeFailed::new_err(()),
                 })?;
         Ok((
-            remaining,
-            serde_pyobject::to_pyobject(py, &greeting)?.into(),
+            PyBytes::new_bound(py, remaining),
+            serde_pyobject::to_pyobject(py, &greeting)?,
         ))
     }
 }
@@ -116,11 +119,12 @@ impl PyGreetingCodec {
 #[pymethods]
 impl PyResponseCodec {
     #[staticmethod]
-    fn decode<'a>(py: Python, bytes: &'a [u8]) -> PyResult<(&'a [u8], PyObject)> {
-        match ResponseCodec::default().decode(bytes) {
+    fn decode(bytes: Bound<PyBytes>) -> PyResult<(Bound<PyBytes>, Bound<PyAny>)> {
+        let py = bytes.py();
+        match ResponseCodec::default().decode(bytes.as_bytes()) {
             Ok((remaining, response)) => Ok((
-                remaining,
-                serde_pyobject::to_pyobject(py, &response)?.into(),
+                PyBytes::new_bound(py, remaining),
+                serde_pyobject::to_pyobject(py, &response)?,
             )),
             Err(err) => Err(match err {
                 decode::ResponseDecodeError::Incomplete => ResponseDecodeIncomplete::new_err(()),

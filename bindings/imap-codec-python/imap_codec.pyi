@@ -52,6 +52,15 @@ class GreetingCodec:
     """
 
     @staticmethod
+    def encode(greeting: dict) -> Encoded:
+        """
+        Encode greeting into fragments.
+
+        :param bytes: Given greeting
+        :return: `Encoded` type holding fragments of encoded greeting
+        """
+
+    @staticmethod
     def decode(bytes: bytes) -> Tuple[bytes, dict]:
         """
         Decode greeting from given bytes.

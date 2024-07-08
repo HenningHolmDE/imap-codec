@@ -98,6 +98,13 @@ impl PyCommandCodec {
 #[pymethods]
 impl PyGreetingCodec {
     #[staticmethod]
+    fn encode(message: Bound<PyAny>) -> PyResult<PyEncoded> {
+        let message = serde_pyobject::from_pyobject(message)?;
+        let encoded = GreetingCodec::default().encode(&message);
+        Ok(PyEncoded(Some(encoded)))
+    }
+
+    #[staticmethod]
     fn decode(bytes: Bound<PyBytes>) -> PyResult<(Bound<PyBytes>, Bound<PyAny>)> {
         let py = bytes.py();
         let (remaining, greeting) =

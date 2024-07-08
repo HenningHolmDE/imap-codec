@@ -92,6 +92,15 @@ class ResponseCodec:
     """
 
     @staticmethod
+    def encode(response: dict) -> Encoded:
+        """
+        Encode response into fragments.
+
+        :param bytes: Given response
+        :return: `Encoded` type holding fragments of encoded response
+        """
+
+    @staticmethod
     def decode(bytes: bytes) -> Tuple[bytes, dict]:
         """
         Decode response from given bytes.

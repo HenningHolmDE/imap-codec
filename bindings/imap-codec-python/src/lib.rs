@@ -126,6 +126,13 @@ impl PyGreetingCodec {
 #[pymethods]
 impl PyResponseCodec {
     #[staticmethod]
+    fn encode(message: Bound<PyAny>) -> PyResult<PyEncoded> {
+        let message = serde_pyobject::from_pyobject(message)?;
+        let encoded = ResponseCodec::default().encode(&message);
+        Ok(PyEncoded(Some(encoded)))
+    }
+
+    #[staticmethod]
     fn decode(bytes: Bound<PyBytes>) -> PyResult<(Bound<PyBytes>, Bound<PyAny>)> {
         let py = bytes.py();
         match ResponseCodec::default().decode(bytes.as_bytes()) {

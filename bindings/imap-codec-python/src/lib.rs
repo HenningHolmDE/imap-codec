@@ -3,7 +3,7 @@ use imap_codec::{
     encode::{Encoded, Encoder},
     CommandCodec, GreetingCodec, ResponseCodec,
 };
-use pyo3::{create_exception, exceptions::PyException, prelude::*};
+use pyo3::{create_exception, exceptions::PyException, prelude::*, types::PyBytes};
 
 #[derive(Debug, Clone, PartialEq)]
 #[pyclass(name = "CommandCodec")]
@@ -34,7 +34,7 @@ create_exception!(imap_codec, ResponseDecodeLiteralFound, ResponseDecodeError);
 
 #[derive(Debug, Clone)]
 #[pyclass(name = "Encoded")]
-struct PyEncoded(Encoded);
+struct PyEncoded(Option<Encoded>);
 
 #[pymethods]
 impl PyEncoded {
@@ -42,13 +42,24 @@ impl PyEncoded {
         slf
     }
 
-    fn __next__(&mut self, py: Python) -> PyResult<Option<PyObject>> {
-        Ok(self
-            .0
+    fn __next__<'py>(&mut self, py: Python<'py>) -> PyResult<Option<Bound<'py, PyAny>>> {
+        let Some(encoded) = &mut self.0 else {
+            return Ok(None);
+        };
+        Ok(encoded
             .next()
             .map(|value| serde_pyobject::to_pyobject(py, &value))
-            .transpose()?
-            .map(Bound::unbind))
+            .transpose()?)
+    }
+
+    fn dump<'py>(&mut self, py: Python<'py>) -> PyResult<Bound<'py, PyBytes>> {
+        // TODO: Could we change `Encoded::dump(self)` to `Encoded::dump(&mut self)`?
+        let encoded = std::mem::take(&mut self.0);
+        let dump = match encoded {
+            Some(encoded) => encoded.dump(),
+            None => Vec::new(),
+        };
+        Ok(PyBytes::new_bound(py, &dump))
     }
 }
 
@@ -58,7 +69,7 @@ impl PyCommandCodec {
     fn encode<'a>(py: Python, message: PyObject) -> PyResult<PyEncoded> {
         let message = serde_pyobject::from_pyobject(message.into_bound(py))?;
         let encoded = CommandCodec::default().encode(&message);
-        Ok(PyEncoded(encoded))
+        Ok(PyEncoded(Some(encoded)))
     }
 
     #[staticmethod]

@@ -126,3 +126,7 @@ class Encoded:
 
     def __iter__(self) -> "Encoded": ...
     def __next__(self) -> dict: ...
+    def dump(self) -> bytes:
+        """
+        Dump the (remaining) encoded data without being guided by [`Fragment`]s.
+        """

@@ -46,7 +46,11 @@ impl AsRef<[u8]> for Entry<'_> {
 }
 
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, ToStatic)]
 pub enum GetMetadataOption {
     /// Only return values that are less than or equal in octet size to the specified limit.
@@ -62,7 +66,11 @@ pub enum GetMetadataOption {
 }
 
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, ToStatic)]
 pub enum Depth {
     /// No entries below the specified entry are returned
@@ -74,7 +82,11 @@ pub enum Depth {
 }
 
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, ToStatic)]
 pub enum MetadataCode {
     LongEntries(u32),
@@ -84,7 +96,11 @@ pub enum MetadataCode {
 }
 
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, ToStatic)]
 pub enum MetadataResponse<'a> {
     WithValues(Vec1<EntryValue<'a>>),

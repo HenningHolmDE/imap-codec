@@ -386,7 +386,11 @@ impl<'a> AsRef<str> for AtomExt<'a> {
 /// ;        See `Quoted`
 /// ```
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, ToStatic)]
 pub enum IString<'a> {
     /// Literal, see [`Literal`].
@@ -710,7 +714,11 @@ impl<'a> AsRef<[u8]> for Literal<'a> {
 
 /// Literal mode, i.e., sync or non-sync.
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, ToStatic)]
 pub enum LiteralMode {
     /// A synchronizing literal, i.e., `{<n>}\r\n<data>`.
@@ -917,7 +925,11 @@ impl<'a> From<Quoted<'a>> for NString<'a> {
 /// ;         See `AtomExt`
 /// ```
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, ToStatic)]
 pub enum AString<'a> {
     // `1*ATOM-CHAR` does not allow resp-specials, but `1*ASTRING-CHAR` does ... :-/
@@ -1406,7 +1418,11 @@ impl TryFrom<char> for QuotedChar {
 /// DIGIT              = "0".."9" ; Numeric digit
 /// ```
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, ToStatic)]
 pub enum Charset<'a> {
     Atom(Atom<'a>),
@@ -1485,7 +1501,11 @@ impl<'a> AsRef<str> for Charset<'a> {
 }
 
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, ToStatic)]
 pub enum NString8<'a> {
     NString(NString<'a>),
@@ -2076,8 +2096,8 @@ mod tests {
     #[cfg(feature = "serde")]
     #[test]
     fn test_deserialization_literal() {
-        let valid_input = r#"{ "data": [ 1, 2, 3 ], "mode": "Sync" }"#;
-        let invalid_input = r#"{ "data": [ 0, 1, 2, 3 ], "mode": "Sync" }"#;
+        let valid_input = r#"{ "data": [ 1, 2, 3 ], "mode": { "type": "Sync" } }"#;
+        let invalid_input = r#"{ "data": [ 0, 1, 2, 3 ], "mode": { "type": "Sync" } }"#;
 
         let literal = serde_json::from_str::<Literal>(valid_input)
             .expect("valid input should deserialize successfully");

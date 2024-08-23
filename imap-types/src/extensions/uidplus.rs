@@ -14,7 +14,11 @@ use crate::core::Vec1;
 pub struct UidSet(pub Vec1<UidElement>);
 
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, ToStatic)]
 pub enum UidElement {
     Single(NonZeroU32),

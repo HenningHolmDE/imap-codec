@@ -87,7 +87,11 @@ impl<'a> AsRef<[u8]> for ListCharString<'a> {
 }
 
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, ToStatic)]
 pub enum ListMailbox<'a> {
     Token(ListCharString<'a>),
@@ -169,7 +173,11 @@ impl<'a> TryFrom<String> for ListMailbox<'a> {
 ///    levels of hierarchy.
 /// 5) Two characters, "#" and "&", have meanings by convention, and should be avoided except
 ///    when used in that convention.
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, ToStatic)]
 pub enum Mailbox<'a> {
     Inbox,
@@ -346,8 +354,8 @@ mod tests {
     #[cfg(feature = "serde")]
     #[test]
     fn test_deserialization_mailbox_other() {
-        let valid_input = r#"{ "Atom": "other" }"#;
-        let invalid_input = r#"{ "Atom": "inbox" }"#;
+        let valid_input = r#"{ "type": "Atom", "data": "other" }"#;
+        let invalid_input = r#"{ "type": "Atom", "data": "inbox" }"#;
 
         let mailbox_other = serde_json::from_str::<MailboxOther>(valid_input)
             .expect("valid input should deserialize successfully");

@@ -10,7 +10,11 @@ use serde::{Deserialize, Serialize};
 use crate::arbitrary::impl_arbitrary_try_from;
 use crate::core::Atom;
 
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, ToStatic)]
 pub enum SortAlgorithm<'a> {
     Display,
@@ -57,7 +61,11 @@ pub struct SortCriterion {
 }
 
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, ToStatic)]
 pub enum SortKey {
     Arrival,

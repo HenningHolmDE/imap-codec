@@ -65,7 +65,11 @@ impl<'a> Command<'a> {
 ///
 /// This enum is used to encode all the different commands.
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, ToStatic)]
 pub enum CommandBody<'a> {
     // ----- Any State (see https://tools.ietf.org/html/rfc3501#section-6.1) -----

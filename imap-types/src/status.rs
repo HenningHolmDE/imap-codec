@@ -8,7 +8,11 @@ use serde::{Deserialize, Serialize};
 
 /// Status data item name used to request a status data item.
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, ToStatic)]
 #[doc(alias = "StatusAttribute")]
 pub enum StatusDataItemName {
@@ -40,7 +44,11 @@ pub enum StatusDataItemName {
 
 /// Status data item.
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, ToStatic)]
 #[doc(alias = "StatusAttributeValue")]
 pub enum StatusDataItem {

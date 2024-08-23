@@ -13,7 +13,11 @@ use serde::{Deserialize, Serialize};
 use crate::arbitrary::impl_arbitrary_try_from;
 use crate::core::{Atom, Vec1, Vec2};
 
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, ToStatic)]
 pub enum Thread {
     Members {
@@ -135,7 +139,11 @@ fn arbitrary_thread_leaf(u: &mut Unstructured) -> arbitrary::Result<Thread> {
     })
 }
 
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, ToStatic)]
 pub enum ThreadingAlgorithm<'a> {
     OrderedSubject,

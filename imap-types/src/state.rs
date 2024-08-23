@@ -57,7 +57,11 @@ use serde::{Deserialize, Serialize};
 use crate::{core::Tag, mailbox::Mailbox};
 
 /// State of the IMAP4rev1 connection.
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    derive(Serialize, Deserialize),
+    serde(tag = "type", content = "data")
+)]
 #[derive(Clone, Debug, Eq, PartialEq, ToStatic)]
 pub enum State<'a> {
     Greeting,
